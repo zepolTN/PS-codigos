@@ -1,0 +1,48 @@
+%%TAREA 5A:
+close all;
+clc;
+
+primera_fila = 1; 
+tiempos = zeros(1, 16);
+%creamos un vector fila que guarde el tiempo que tardamos en entrenar el VQ
+%por cada numero de bit. Como nos pide hasta 16 pues creamos una vector de
+%16 columnas, cada vez que el tic toc mida el tiempo de entrenamiento
+%guardara el tiempo en segundos en cada columna de la matriz.
+
+VQt = zeros(2^17-2, size(training_data,2));
+    %guardamos el espacio. no es necesario pero como sabemos lo que vamos a
+    %necesitar lo hacemos
+
+for nbits = 1:16
+    %voy de un bit a 16 porque me lo exige el enunciado
+    % Entrenar el VQ y medir cuánto tarda
+    tic; %empezamos a cronometrar
+    [VQ, Dist, no_asig] = Kmeans(training_data, nbits, [], 0.01, 0);
+    %ponemos 0 para que no se habran graficas y perjudique el tiempo medido
+    tiempos(nbits) = toc;
+    %con toc paramos de cronometrar y guardamos el tiempo en segundos en
+    %tiempos
+
+    % Guardamos los centroides en el bloque de filas correspondiente
+    num_centroides = 2^nbits;
+    ultima_fila = primera_fila + num_centroides - 1;
+    %con esto pasamos a la siguiente fila
+   
+    VQt(primera_fila:ultima_fila, :) = VQ;
+    %tenemos que poner : porque si no lo ponemos, al ser dos columnas,
+    %MATLAB no copiaria ambas
+
+    % Preparamos la primera fila libre para el siguiente VQ
+    primera_fila = ultima_fila + 1;
+end
+
+figure;
+plot(1:16, tiempos, 'o-');
+grid on;
+xlabel('Número de bits del VQ');
+ylabel('Tiempo de entrenamiento (s)');
+title('Tiempo de entrenamiento de cada VQ');
+
+save('VQt.mat', 'VQt', 'tiempos');
+%guardamos la matriz con los tiempos que hemos medido
+
