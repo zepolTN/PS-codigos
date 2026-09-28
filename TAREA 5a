@@ -16,12 +16,15 @@ VQt = zeros(2^17-2, size(training_data,2));
 for nbits = 1:16
     %voy de un bit a 16 porque me lo exige el enunciado
     % Entrenar el VQ y medir cuánto tarda
+    fprintf('Entrenando VQ de %d bits...\n', nbits);
+    %lo pongo para saber por donde va ejecutando
     tic; %empezamos a cronometrar
     [VQ, Dist, no_asig] = Kmeans(training_data, nbits, [], 0.01, 0);
     %ponemos 0 para que no se habran graficas y perjudique el tiempo medido
     tiempos(nbits) = toc;
     %con toc paramos de cronometrar y guardamos el tiempo en segundos en
     %tiempos
+     fprintf('VQ de %d bits terminado en %.2f segundos\n', nbits, tiempos(nbits));
 
     % Guardamos los centroides en el bloque de filas correspondiente
     num_centroides = 2^nbits;
@@ -45,4 +48,3 @@ title('Tiempo de entrenamiento de cada VQ');
 
 save('VQt.mat', 'VQt', 'tiempos');
 %guardamos la matriz con los tiempos que hemos medido
-
